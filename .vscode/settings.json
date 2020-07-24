@@ -1,0 +1,28 @@
+{
+    "files.autoSave": "afterDelay",
+    "editor.formatOnSave": true,
+    "python.linting.lintOnSave": true,
+    "python.pythonPath": ".venv/bin/python",
+    "python.formatting.provider": "autopep8",
+    "python.formatting.autopep8Args": [
+        "--aggressive",
+        "--aggressive",
+        "--experimental"
+    ],
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.pydocstyleEnabled": true,
+    "python.linting.pycodestyleEnabled": true,
+    "python.linting.banditEnabled": true,
+    "python.linting.mypyEnabled": true,
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.linting.banditArgs": [
+        "-c",
+        ".bandit"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true
+}
