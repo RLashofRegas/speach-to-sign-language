@@ -15,9 +15,9 @@ cd ${WLASL_PATH}/start_kit
 
 python video_downloader.py
 
-bash ./scripts/swf2mp4.sh
+python preprocess.py
 
-mv ./raw_videos_mp4 ${START_DIR}
+mv ./videos ${START_DIR}
 
 cp ./WLASL_v0.3.json ${START_DIR}
 
