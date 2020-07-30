@@ -11,6 +11,7 @@ class MediapipeTarget(Enum):
     """Enum for mediapipe bazel targets."""
 
     MULTI_HAND_TRACKING_GPU = 1
+    MULTI_HAND_TRACKING_CPU = 2
 
 
 class MediapipeRunner:
@@ -19,11 +20,13 @@ class MediapipeRunner:
     def __init__(self, mediapipe_path: Optional[Path] = None) -> None:
         """Initialize a MediapipeRunner instance."""
         self._temp_path: Path = Path('/tmp/speach-to-sign')
+        self._is_pulled: bool
         if (mediapipe_path is None):
             self.mediapipe_path: Path = Path(f'{self._temp_path}/mediapipe')
+            self._is_pulled = False
         else:
             self.mediapipe_path = mediapipe_path
-        self._is_pulled: bool = False
+            self._is_pulled = True
 
     def build(
             self, target: MediapipeTarget,
@@ -34,17 +37,41 @@ class MediapipeRunner:
             target_path = Path(
                 'mediapipe/examples/desktop' +
                 '/multi_hand_tracking:multi_hand_tracking_gpu')
+        elif(target == MediapipeTarget.MULTI_HAND_TRACKING_CPU):
+            target_path = Path(
+                'mediapipe/examples/desktop' +
+                '/multi_hand_tracking:multi_hand_tracking_cpu'
+            )
         else:
             raise NotImplementedError
 
-        base_build: str
-        if(gpu_build):
-            base_build = 'bazel build --verbose_failures -c opt --copt' \
-                + ' -DMESA_EGL_NO_X11_HEADERS --copt -DEGL_NO_X11'
-        else:
-            base_build = 'bazel build -c opt --define MEDIAPIPE_DISABLE_GPU=1'
+        base_build: List[str] = [
+            'bazel',
+            'build'
+        ]
 
-        build_cmd = f'{base_build} {target_path}'
+        if(gpu_build):
+            base_build.extend([
+                '--verbose_failures',
+                '-c',
+                'opt',
+                '--copt',
+                '-DMESA_EGL_NO_X11_HEADERS',
+                '--copt',
+                '-DEGL_NO_X11'
+            ])
+        else:
+            base_build.extend([
+                '-c',
+                'opt',
+                '--define',
+                'MEDIAPIPE_DISABLE_GPU=1'
+            ])
+
+        if(not self._is_pulled):
+            self._pull()
+
+        build_cmd = base_build + [str(target_path)]
         subprocess.run(build_cmd, cwd=self.mediapipe_path)
 
     def run(self, target: MediapipeTarget,
@@ -56,7 +83,12 @@ class MediapipeRunner:
             binary_path = 'bazel-bin/mediapipe/examples/desktop' \
                 + '/multi_hand_tracking/multi_hand_tracking_gpu'
             graph_path = 'mediapipe/graphs/hand_tracking' \
-                + '/multi_hand_tracking_desktop.pbtxt'
+                + '/multi_hand_tracking_mobile.pbtxt'
+        elif(target == MediapipeTarget.MULTI_HAND_TRACKING_CPU):
+            binary_path = 'bazel-bin/mediapipe/examples/desktop' \
+                + '/multi_hand_tracking/multi_hand_tracking_cpu'
+            graph_path = 'mediapipe/graphs/hand_tracking' \
+                + '/multi_hand_tracking_desktop_live.pbtxt'
         else:
             raise NotImplementedError
 
@@ -81,7 +113,7 @@ class MediapipeRunner:
             self._is_pulled = True
             return
 
-        git_clone = f'git clone https://github.com/google/mediapipe.git' \
+        git_clone = f'git clone https://github.com/RLashofRegas/mediapipe.git' \
             + ' {self.mediapipe_path}'
         subprocess.run(git_clone)
         self._is_pulled = True

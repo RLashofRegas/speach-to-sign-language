@@ -8,7 +8,7 @@ if [ ! -f "${TEMP_PATH}" ]; then
 fi
 
 if [ ! -f "${WLASL_PATH}" ]; then
-	git clone https://github.com/dxli94/WLASL.git ${WLASL_PATH}
+	git clone https://github.com/RLashofRegas/WLASL.git ${WLASL_PATH}
 fi
 
 cd ${WLASL_PATH}/start_kit
