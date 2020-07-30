@@ -13,9 +13,9 @@ fi
 
 cd ${WLASL_PATH}/start_kit
 
-python video_downloader.py
+python3 video_downloader.py
 
-python preprocess.py
+python3 preprocess.py
 
 mv ./videos ${START_DIR}
 
