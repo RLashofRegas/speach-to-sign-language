@@ -17,10 +17,8 @@ python3 video_downloader.py
 
 python3 preprocess.py
 
-mv ./videos ${START_DIR}
-
-cp ./WLASL_v0.3.json ${START_DIR}
+mv ./videos ${START_DIR} \
+&& cp ./WLASL_v0.3.json ${START_DIR} \
+&& rm -rf ${TEMP_PATH}
 
 cd ${START_DIR}
-
-rm -rf ${TEMP_PATH}
