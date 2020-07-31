@@ -75,6 +75,10 @@ def initialize_arguments() -> argparse.ArgumentParser:
     arg_parser.add_argument(
         '-i', '--index', type=str, default='./WLASL_v0.3.json',
         help='Path to file index json file.')
+    arg_parser.add_argument(
+        '-p', '--temp_processed', type=str,
+        default='/tmp/speach-to-sign/temp_processed',
+        help='Path to temp processed dir for intermediate videos.')
     return arg_parser
 
 
@@ -94,7 +98,7 @@ if __name__ == "__main__":
 
     videos_path = Path(args.videos)
 
-    processed_path = Path('/tmp/speach-to-sign/temp_processed')
+    processed_path = Path(args.temp_processed)
 
     dataset_path = Path(args.output)
     index_path = Path(args.index)
