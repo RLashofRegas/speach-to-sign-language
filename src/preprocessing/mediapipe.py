@@ -113,7 +113,8 @@ class MediapipeRunner:
             self._is_pulled = True
             return
 
-        git_clone = f'git clone https://github.com/RLashofRegas/mediapipe.git' \
+        git_clone = \
+            f'git clone https://github.com/RLashofRegas/mediapipe.git' \
             + ' {self.mediapipe_path}'
         subprocess.run(git_clone)
         self._is_pulled = True
