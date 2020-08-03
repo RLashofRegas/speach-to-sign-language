@@ -55,7 +55,7 @@ def make_discriminator_model():
     conv4a = layers.LeakyReLU()(conv4)
     conv4d = layers.Dropout(0.1)(conv4a)
 
-    reshaped = layers.Reshape((num_frames, 4*4*32))(conv4d)
+    reshaped = layers.Reshape((num_frames, 2*2*32))(conv4d)
     lstm = layers.Bidirectional(layers.LSTM(128))(reshaped)
     concat = layers.Concatenate()([lstm, label])
 
