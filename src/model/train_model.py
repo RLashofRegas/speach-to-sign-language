@@ -9,26 +9,31 @@ import time
 
 
 buffer_size = 30000
-batch_size = 32
+batch_size = 16
 dataset_root = Path('dataset')
 dictionary_path = Path('dictionary.txt')
 num_frames_initial = 253
-frame_sampling_rate = 10
+frame_sampling_rate = 15
 num_frames = int(num_frames_initial / frame_sampling_rate)
 frame_shape = (64, 64)
 input_shape = [batch_size, num_frames, frame_shape[0], frame_shape[1]]
 num_epochs = 500
-noise_dim = 100
-num_examples_to_generate = 32
+noise_dim = 20
+num_examples_to_generate = 8
 
 file_batches = tf.data.Dataset.list_files(
     str(dataset_root / '*/*/*.avi')).shuffle(buffer_size).batch(batch_size)
+
+words_in_dir = set()
+for word_dir in dataset_root.glob('*/*'):
+    words_in_dir.add(word_dir.parts[-1])
 
 index_by_word = {}
 with open(str(dictionary_path)) as f:
     for i, word in enumerate(f.readlines()):
         stripped = word.strip()
-        index_by_word[stripped] = i
+        if (stripped in index_by_word):
+            index_by_word[stripped] = i
 
 num_words = len(index_by_word)
 
