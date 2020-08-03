@@ -57,7 +57,7 @@ def make_discriminator_model():
     conv5a = layers.LeakyReLU()(conv5)
     conv5d = layers.Dropout(0.1)(conv5a)
 
-    reshaped = layers.Reshape((num_frames, 16*16*256))(conv3d)
+    reshaped = layers.Reshape((num_frames, 16*16*256))(conv5d)
     lstm = layers.Bidirectional(layers.LSTM(256))(reshaped)
     concat = layers.Concatenate()([lstm, label])
 
@@ -80,12 +80,12 @@ def make_generator_model():
     dense1n = layers.BatchNormalization()(dense1)
     dense1a = layers.LeakyReLU()(dense1n)
 
-    dense2 = layers.Dense(num_frames*256, use_bias=False)(dense1)
+    dense2 = layers.Dense(num_frames*256, use_bias=False)(dense1a)
     dense2n = layers.BatchNormalization()(dense2)
     dense2a = layers.LeakyReLU()(dense2n)
 
-    lstm = layers.Bidirectional(layers.LSTM(256, use_bias=False))(dense2)
-    dense3 = layers.Dense(num_frames*16*16*256, use_bias=False)
+    lstm = layers.Bidirectional(layers.LSTM(256, use_bias=False))(dense2a)
+    dense3 = layers.Dense(num_frames*16*16*256, use_bias=False)(lstm)
     dense3n = layers.BatchNormalization()(dense3)
     dense3a = layers.LeakyReLU()(dense3n)
 
@@ -107,9 +107,9 @@ def make_generator_model():
     conv4n = layers.BatchNormalization()(conv4)
     conv4a = layers.LeakyReLU()(conv4n)
 
-    dense4 = layers.Dense(num_frames*frame_shape[0]*frame_shape[1], activation='tanh')
+    dense4 = layers.Dense(num_frames*frame_shape[0]*frame_shape[1], activation='tanh')(conv4a)
 
-    output = layers.Reshape((num_frames, frame_shape[0], frame_shape[1], 1))
+    output = layers.Reshape((num_frames, frame_shape[0], frame_shape[1], 1))(dense4)
 
     model = tf.keras.Model(inputs=[seed, label], outputs=output)
     return model
