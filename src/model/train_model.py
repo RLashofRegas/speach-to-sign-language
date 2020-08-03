@@ -164,7 +164,7 @@ def train_step(images, labels):
 
 def get_video_data(file_batch):
     train_data = np.empty((batch_size, num_frames, frame_shape[0], frame_shape[1], 1))
-    train_labels = np.empty((batch_size))
+    train_labels = np.zeros((batch_size, num_words))
     for file_index, file_path in enumerate(file_batch):
         train_file = Path(file_path.numpy().decode('utf-8'))
         label = train_file.parts[-2]
@@ -191,10 +191,9 @@ def get_video_data(file_batch):
         cap.release()
 
         train_data[file_index] = video_data
-        train_labels[file_index] = label_index
+        train_labels[file_index, label_index] = 1
     
-    train_dataset = tf.data.Dataset.from_tensor_slices((train_data, train_labels))
-    return train_dataset
+    return train_data, train_labels
 
 
 def train(dataset, epochs):
@@ -202,9 +201,8 @@ def train(dataset, epochs):
     start = time.time()
 
     for file_batch in file_batches:
-      video_batch = get_video_data(file_batch)
-      train_labels_batch = tf.one_hot(video_batch[1], num_words)
-      train_step(video_batch[0], train_labels_batch)
+      train_data, train_labels = get_video_data(file_batch)
+      train_step(train_data, train_labels)
 
 
     # Save the model every 15 epochs
