@@ -186,7 +186,7 @@ def get_video_data(file_batch):
             
             resized = cv2.resize(frame, frame_shape)
             gray_frame = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
-            normalized_frame = gray_frame / 255.0
+            normalized_frame = (gray_frame / 255.0).reshape((gray_frame.shape[0], gray_frame.shape[1], 1))
             video_data[frame_index] = normalized_frame
         cap.release()
 
