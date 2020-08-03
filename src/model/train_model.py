@@ -37,25 +37,25 @@ def make_discriminator_model():
     label = tf.keras.Input((num_words,))
 
     conv1 = layers.Conv2D(
-        32, (5, 5),
+        16, (5, 5),
         strides=(2, 2),
         padding='same', input_shape=input_shape[2:])(video)
     conv1a = layers.LeakyReLU()(conv1)
     conv1d = layers.Dropout(0.1)(conv1a)
 
-    conv2 = layers.Conv2D(64, (5, 5), strides=(4, 4), padding='same', input_shape=[250, 250, 32])(conv1d)
+    conv2 = layers.Conv2D(32, (5, 5), strides=(4, 4), padding='same')(conv1d)
     conv2a = layers.LeakyReLU()(conv2)
     conv2d = layers.Dropout(0.1)(conv2a)
 
-    conv3 = layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same', input_shape=[63, 63, 64])(conv2d)
+    conv3 = layers.Conv2D(32, (5, 5), strides=(2, 2), padding='same')(conv2d)
     conv3a = layers.LeakyReLU()(conv3)
     conv3d = layers.Dropout(0.1)(conv3a)
 
-    conv4 = layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same', input_shape=[32, 32, 64])(conv3d)
+    conv4 = layers.Conv2D(32, (5, 5), strides=(2, 2), padding='same')(conv3d)
     conv4a = layers.LeakyReLU()(conv4)
     conv4d = layers.Dropout(0.1)(conv4a)
 
-    reshaped = layers.Reshape((num_frames, 16*16*64))(conv4d)
+    reshaped = layers.Reshape((num_frames, 4*4*32))(conv4d)
     lstm = layers.Bidirectional(layers.LSTM(128))(reshaped)
     concat = layers.Concatenate()([lstm, label])
 
@@ -78,24 +78,24 @@ def make_generator_model():
     dense1n = layers.BatchNormalization()(dense1)
     dense1a = layers.LeakyReLU()(dense1n)
 
-    dense2 = layers.Dense(num_frames*32, use_bias=False)(dense1a)
+    dense2 = layers.Dense(num_frames*16, use_bias=False)(dense1a)
     dense2n = layers.BatchNormalization()(dense2)
     dense2a = layers.LeakyReLU()(dense2n)
 
-    reshaped1 = layers.Reshape((num_frames, 32))(dense2a)
+    reshaped1 = layers.Reshape((num_frames, 16))(dense2a)
 
     lstm = layers.Bidirectional(layers.LSTM(64, use_bias=False))(reshaped1)
-    dense3 = layers.Dense(4*4*32, use_bias=False)(lstm)
+    dense3 = layers.Dense(4*4*16, use_bias=False)(lstm)
     dense3n = layers.BatchNormalization()(dense3)
     dense3a = layers.LeakyReLU()(dense3n)
 
-    reshaped2 = layers.Reshape((4, 4, 32))(dense3a)
+    reshaped2 = layers.Reshape((4, 4, 16))(dense3a)
 
-    conv1 = layers.Conv2DTranspose(32, (5,5), strides=(2,2), use_bias=False, input_shape=[4, 4, 32])(reshaped2)
+    conv1 = layers.Conv2DTranspose(16, (5,5), strides=(2,2), use_bias=False, input_shape=[4, 4, 16])(reshaped2)
     conv1n = layers.BatchNormalization()(conv1)
     conv1a = layers.LeakyReLU()(conv1n)
 
-    conv2 = layers.Conv2DTranspose(32, (5,5), strides=(2,2), use_bias=False, input_shape=[8, 8, 32])(conv1a)
+    conv2 = layers.Conv2DTranspose(16, (5,5), strides=(2,2), use_bias=False, input_shape=[8, 8, 16])(conv1a)
     conv2n = layers.BatchNormalization()(conv2)
     conv2a = layers.LeakyReLU()(conv2n)
 
