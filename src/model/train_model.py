@@ -166,7 +166,7 @@ def get_video_data(file_batch):
     train_data = []
     train_labels = []
     for file_path in file_batch:
-        train_file = Path(file_path)
+        train_file = Path(file_path.numpy().decode('utf-8'))
         label = train_file.parts[-2]
         label_index = index_by_word[label]
 
