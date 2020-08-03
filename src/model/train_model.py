@@ -6,12 +6,23 @@ from tensorflow.keras import layers
 from pathlib import Path
 import os
 import time
+import argparse
 
+arg_parser = argparse.ArgumentParser(
+        description='Run the preprocessing pipeline.'
+    )
+arg_parser.add_argument(
+    '-d', '--dictionary_path', type=str, default='dictionary.txt',
+    help='Path to where dictionary will be created.')
+arg_parser.add_argument(
+    '-s', '--dataset_path', type=str, default='dataset',
+    help='Path of where to look for the dataset.')
+args = arg_parser.parse_args()
 
 buffer_size = 30000
 batch_size = 16
-dataset_root = Path('dataset')
-dictionary_path = Path('dictionary.txt')
+dataset_root = Path(args.dataset_path)
+dictionary_path = Path(args.dictionary_path)
 num_frames_initial = 253
 frame_sampling_rate = 15
 num_frames = int(num_frames_initial / frame_sampling_rate)
