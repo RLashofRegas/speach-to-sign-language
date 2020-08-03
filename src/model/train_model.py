@@ -9,7 +9,7 @@ from pathlib import Path
 buffer_size = 30000
 batch_size = 64
 dataset_root = Path('dataset')
-dictionary_path = Path('../../dictionary.txt')
+dictionary_path = Path('dictionary.txt')
 num_frames = 253
 frame_shape = (500, 500)
 input_shape = [batch_size, num_frames, frame_shape[0], frame_shape[1]]
