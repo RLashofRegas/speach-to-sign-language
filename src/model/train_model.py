@@ -182,7 +182,7 @@ def get_video_data(file_batch):
             if (frame is None):
                 break
             
-            frame_index = frame_num * frame_sampling_rate
+            frame_index = int(frame_num / frame_sampling_rate)
             
             resized = cv2.resize(frame, frame_shape)
             gray_frame = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
