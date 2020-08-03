@@ -14,7 +14,7 @@ dictionary_path = Path('dictionary.txt')
 num_frames_initial = 253
 frame_sampling_rate = 5
 num_frames = int(num_frames_initial / frame_sampling_rate)
-frame_shape = (500, 500)
+frame_shape = (128, 128)
 input_shape = [batch_size, num_frames, frame_shape[0], frame_shape[1]]
 epochs = 500
 noise_dim = 100
@@ -171,13 +171,17 @@ def get_video_data(file_batch):
 
         cap = cv2.VideoCapture(str(train_file))
         video_data = []
-        frame_num = 0
+        frame_num = -1
         while (True):
             ret, frame = cap.read()
+            frame_num += 1
+            if (frame_num % frame_sampling_rate != 0):
+                continue
             if (frame is None):
                 break
-
-            gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            
+            resized = cv2.resize(frame, frame_shape)
+            gray_frame = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
             normalized_frame = gray_frame / 255.0
             video_data.append(normalized_frame)
         cap.release()
