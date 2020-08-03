@@ -16,7 +16,7 @@ frame_sampling_rate = 10
 num_frames = int(num_frames_initial / frame_sampling_rate)
 frame_shape = (64, 64)
 input_shape = [batch_size, num_frames, frame_shape[0], frame_shape[1]]
-epochs = 500
+num_epochs = 500
 noise_dim = 100
 num_examples_to_generate = 32
 
@@ -211,3 +211,6 @@ def train(dataset, epochs):
       checkpoint.save(file_prefix = checkpoint_prefix)
 
     print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
+
+
+train(file_batches, num_epochs)
