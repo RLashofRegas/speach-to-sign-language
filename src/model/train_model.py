@@ -76,17 +76,17 @@ def make_generator_model():
 
     concat = layers.Concatenate()([seed, label])
     
-    dense1 = layers.Dense(256, use_bias=False)(concat)
+    dense1 = layers.Dense(64, use_bias=False)(concat)
     dense1n = layers.BatchNormalization()(dense1)
     dense1a = layers.LeakyReLU()(dense1n)
 
-    dense2 = layers.Dense(num_frames*256, use_bias=False)(dense1a)
+    dense2 = layers.Dense(num_frames*64, use_bias=False)(dense1a)
     dense2n = layers.BatchNormalization()(dense2)
     dense2a = layers.LeakyReLU()(dense2n)
 
-    reshaped1 = layers.Reshape((num_frames, 256))(dense2a)
+    reshaped1 = layers.Reshape((num_frames, 64))(dense2a)
 
-    lstm = layers.Bidirectional(layers.LSTM(256, use_bias=False))(reshaped1)
+    lstm = layers.Bidirectional(layers.LSTM(64, use_bias=False))(reshaped1)
     dense3 = layers.Dense(4*4*64, use_bias=False)(lstm)
     dense3n = layers.BatchNormalization()(dense3)
     dense3a = layers.LeakyReLU()(dense3n)
@@ -101,15 +101,7 @@ def make_generator_model():
     conv2n = layers.BatchNormalization()(conv2)
     conv2a = layers.LeakyReLU()(conv2n)
 
-    conv3 = layers.Conv2DTranspose(256, (5,5), strides=(2,2), use_bias=False, input_shape=[16, 16, 256])(conv2a)
-    conv3n = layers.BatchNormalization()(conv3)
-    conv3a = layers.LeakyReLU()(conv3n)
-
-    conv4 = layers.Conv2DTranspose(128, (5,5), strides=(2,2), use_bias=False, input_shape=[32, 32, 256])(conv3a)
-    conv4n = layers.BatchNormalization()(conv4)
-    conv4a = layers.LeakyReLU()(conv4n)
-
-    flat = layers.Flatten()(conv4a)
+    flat = layers.Flatten()(conv2a)
     dense4 = layers.Dense(num_frames*frame_shape[0]*frame_shape[1], activation='tanh')(flat)
 
     output = layers.Reshape((num_frames, frame_shape[0], frame_shape[1], 1))(dense4)
