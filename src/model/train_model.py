@@ -87,11 +87,11 @@ def make_generator_model():
     reshaped1 = layers.Reshape((num_frames, 256))(dense2a)
 
     lstm = layers.Bidirectional(layers.LSTM(256, use_bias=False))(reshaped1)
-    dense3 = layers.Dense(num_frames*4*4*64, use_bias=False)(lstm)
+    dense3 = layers.Dense(4*4*64, use_bias=False)(lstm)
     dense3n = layers.BatchNormalization()(dense3)
     dense3a = layers.LeakyReLU()(dense3n)
 
-    reshaped2 = layers.Reshape((num_frames, 4, 4, 64))(dense3a)
+    reshaped2 = layers.Reshape((4, 4, 64))(dense3a)
 
     conv1 = layers.Conv2DTranspose(128, (5,5), strides=(2,2), use_bias=False, input_shape=[4, 4, 64])(reshaped2)
     conv1n = layers.BatchNormalization()(conv1)
@@ -109,7 +109,8 @@ def make_generator_model():
     conv4n = layers.BatchNormalization()(conv4)
     conv4a = layers.LeakyReLU()(conv4n)
 
-    dense4 = layers.Dense(num_frames*frame_shape[0]*frame_shape[1], activation='tanh')(conv4a)
+    flat = layers.Flatten()(conv4a)
+    dense4 = layers.Dense(num_frames*frame_shape[0]*frame_shape[1], activation='tanh')(flat)
 
     output = layers.Reshape((num_frames, frame_shape[0], frame_shape[1], 1))(dense4)
 
