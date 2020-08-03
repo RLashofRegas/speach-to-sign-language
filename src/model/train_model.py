@@ -11,7 +11,9 @@ buffer_size = 30000
 batch_size = 32
 dataset_root = Path('dataset')
 dictionary_path = Path('dictionary.txt')
-num_frames = 253
+num_frames_initial = 253
+frame_sampling_rate = 5
+num_frames = int(num_frames_initial / frame_sampling_rate)
 frame_shape = (500, 500)
 input_shape = [batch_size, num_frames, frame_shape[0], frame_shape[1]]
 epochs = 500
@@ -35,30 +37,26 @@ def make_discriminator_model():
     label = tf.keras.Input((num_words,))
 
     conv1 = layers.Conv2D(
-        64, (5, 5),
+        32, (5, 5),
         strides=(2, 2),
         padding='same', input_shape=input_shape[2:])(video)
     conv1a = layers.LeakyReLU()(conv1)
     conv1d = layers.Dropout(0.1)(conv1a)
 
-    conv2 = layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same', input_shape=[250, 250, 64])(conv1d)
+    conv2 = layers.Conv2D(64, (5, 5), strides=(4, 4), padding='same', input_shape=[250, 250, 32])(conv1d)
     conv2a = layers.LeakyReLU()(conv2)
     conv2d = layers.Dropout(0.1)(conv2a)
 
-    conv3 = layers.Conv2D(256, (5, 5), strides=(2, 2), padding='same', input_shape=[125, 125, 128])(conv2d)
+    conv3 = layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same', input_shape=[63, 63, 64])(conv2d)
     conv3a = layers.LeakyReLU()(conv3)
     conv3d = layers.Dropout(0.1)(conv3a)
 
-    conv4 = layers.Conv2D(256, (5, 5), strides=(2, 2), padding='same', input_shape=[63, 63, 256])(conv3d)
+    conv4 = layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same', input_shape=[32, 32, 64])(conv3d)
     conv4a = layers.LeakyReLU()(conv4)
     conv4d = layers.Dropout(0.1)(conv4a)
 
-    conv5 = layers.Conv2D(256, (5, 5), strides=(2, 2), padding='same', input_shape=[32, 32, 256])(conv4d)
-    conv5a = layers.LeakyReLU()(conv5)
-    conv5d = layers.Dropout(0.1)(conv5a)
-
-    reshaped = layers.Reshape((num_frames, 16*16*256))(conv5d)
-    lstm = layers.Bidirectional(layers.LSTM(256))(reshaped)
+    reshaped = layers.Reshape((num_frames, 16*16*64))(conv4d)
+    lstm = layers.Bidirectional(layers.LSTM(128))(reshaped)
     concat = layers.Concatenate()([lstm, label])
 
     dense1 = layers.Dense(256)(concat)
@@ -76,28 +74,28 @@ def make_generator_model():
 
     concat = layers.Concatenate()([seed, label])
     
-    dense1 = layers.Dense(64, use_bias=False)(concat)
+    dense1 = layers.Dense(32, use_bias=False)(concat)
     dense1n = layers.BatchNormalization()(dense1)
     dense1a = layers.LeakyReLU()(dense1n)
 
-    dense2 = layers.Dense(num_frames*64, use_bias=False)(dense1a)
+    dense2 = layers.Dense(num_frames*32, use_bias=False)(dense1a)
     dense2n = layers.BatchNormalization()(dense2)
     dense2a = layers.LeakyReLU()(dense2n)
 
-    reshaped1 = layers.Reshape((num_frames, 64))(dense2a)
+    reshaped1 = layers.Reshape((num_frames, 32))(dense2a)
 
     lstm = layers.Bidirectional(layers.LSTM(64, use_bias=False))(reshaped1)
-    dense3 = layers.Dense(4*4*64, use_bias=False)(lstm)
+    dense3 = layers.Dense(4*4*32, use_bias=False)(lstm)
     dense3n = layers.BatchNormalization()(dense3)
     dense3a = layers.LeakyReLU()(dense3n)
 
-    reshaped2 = layers.Reshape((4, 4, 64))(dense3a)
+    reshaped2 = layers.Reshape((4, 4, 32))(dense3a)
 
-    conv1 = layers.Conv2DTranspose(128, (5,5), strides=(2,2), use_bias=False, input_shape=[4, 4, 64])(reshaped2)
+    conv1 = layers.Conv2DTranspose(32, (5,5), strides=(2,2), use_bias=False, input_shape=[4, 4, 32])(reshaped2)
     conv1n = layers.BatchNormalization()(conv1)
     conv1a = layers.LeakyReLU()(conv1n)
 
-    conv2 = layers.Conv2DTranspose(256, (5,5), strides=(2,2), use_bias=False, input_shape=[8, 8, 128])(conv1a)
+    conv2 = layers.Conv2DTranspose(64, (5,5), strides=(2,2), use_bias=False, input_shape=[8, 8, 32])(conv1a)
     conv2n = layers.BatchNormalization()(conv2)
     conv2a = layers.LeakyReLU()(conv2n)
 
@@ -173,6 +171,7 @@ def get_video_data(file_batch):
 
         cap = cv2.VideoCapture(str(train_file))
         video_data = []
+        frame_num = 0
         while (True):
             ret, frame = cap.read()
             if (frame is None):
