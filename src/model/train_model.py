@@ -95,7 +95,7 @@ def make_generator_model():
     conv1n = layers.BatchNormalization()(conv1)
     conv1a = layers.LeakyReLU()(conv1n)
 
-    conv2 = layers.Conv2DTranspose(64, (5,5), strides=(2,2), use_bias=False, input_shape=[8, 8, 32])(conv1a)
+    conv2 = layers.Conv2DTranspose(32, (5,5), strides=(2,2), use_bias=False, input_shape=[8, 8, 32])(conv1a)
     conv2n = layers.BatchNormalization()(conv2)
     conv2a = layers.LeakyReLU()(conv2n)
 
