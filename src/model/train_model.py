@@ -88,7 +88,7 @@ def make_generator_model():
     # dense2n = layers.BatchNormalization()(dense2)
     # dense2a = layers.LeakyReLU()(dense2n)
 
-    reshaped1 = layers.Reshape((num_frames, 8))(dense2a)
+    reshaped1 = layers.Reshape((num_frames, 8))(dense1a)
 
     lstm = layers.Bidirectional(layers.LSTM(32, use_bias=False))(reshaped1)
     dense3 = layers.Dense(2*2*8, use_bias=False)(lstm)
