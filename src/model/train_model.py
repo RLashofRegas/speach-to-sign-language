@@ -25,7 +25,7 @@ dataset_root = Path(args.dataset_path)
 dictionary_path = Path(args.dictionary_path)
 num_frames_initial = 253
 frame_sampling_rate = 15
-num_frames = int(num_frames_initial / frame_sampling_rate)
+num_frames = int(num_frames_initial / frame_sampling_rate) + 1
 frame_shape = (64, 64)
 input_shape = [batch_size, num_frames, frame_shape[0], frame_shape[1]]
 num_epochs = 500
@@ -203,11 +203,7 @@ def get_video_data(file_batch):
             resized = cv2.resize(frame, frame_shape)
             gray_frame = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
             normalized_frame = (gray_frame / 255.0).reshape((gray_frame.shape[0], gray_frame.shape[1], 1))
-            try:
-                video_data[frame_index] = normalized_frame
-            except IndexError as e:
-                print(f'messed up indexes: video_data.shape: {video_data.shape}, frame_index: {frame_index}, frame_num: {frame_num}, num_frames: {num_frames}')
-                raise e
+            video_data[frame_index] = normalized_frame
             
         cap.release()
 
