@@ -30,14 +30,14 @@ def run_mediapipe(
 
     processed_path.mkdir(parents=True, exist_ok=True)
 
-    num_frames: List[int] = []
+    # num_frames: List[int] = []
     for filename in os.listdir(str(videos_path)):
         file_path = os.path.join(str(videos_path), filename)
-        cap = cv2.VideoCapture(file_path)
-        num_frames.append(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        # cap = cv2.VideoCapture(file_path)
+        # num_frames.append(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         processor.process_video(file_path, str(processed_path))
 
-    max_frames = int(max(num_frames))
+    max_frames = 253  # int(max(num_frames))
     print(f'Max frames: {max_frames}')
     return max_frames
 

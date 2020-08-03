@@ -1,6 +1,9 @@
 # downloaded videos and video info file from WLASL repo
 raw_videos_mp4/*
 processed_videos/*
+videos/*
+dataset/*
+temp*/*
 WLASL_v0.3.json
 
 # Byte-compiled / optimized / DLL files

@@ -28,3 +28,4 @@ $ sudo apt-get install libopencv-core-dev libopencv-highgui-dev \
 $ cd speach-to-sign-language/
 $ bash scripts/download_videos.sh
 ```
+- Install tensorflow `pip3 install tensorflow`
