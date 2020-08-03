@@ -163,8 +163,8 @@ def train_step(images, labels):
 
 
 def get_video_data(file_batch):
-    train_data = np.array((batch_size, num_frames, frame_shape[0], frame_shape[1], 1))
-    train_labels = np.array((batch_size))
+    train_data = np.empty((batch_size, num_frames, frame_shape[0], frame_shape[1], 1))
+    train_labels = np.empty((batch_size))
     for file_index, file_path in enumerate(file_batch):
         train_file = Path(file_path.numpy().decode('utf-8'))
         label = train_file.parts[-2]
