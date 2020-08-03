@@ -163,36 +163,36 @@ def train_step(images, labels):
 
 
 def get_video_data(file_batch):
-    train_data = []
-    train_labels = []
-    for file_path in file_batch:
+    train_data = np.array((batch_size, num_frames, frame_shape[0], frame_shape[1], 1))
+    train_labels = np.array((batch_size))
+    for file_index, file_path in enumerate(file_batch):
         train_file = Path(file_path.numpy().decode('utf-8'))
         label = train_file.parts[-2]
         label_index = index_by_word[label]
 
         cap = cv2.VideoCapture(str(train_file))
-        video_data = []
+        video_data = np.zeros((num_frames, frame_shape[0], frame_shape[1], 1))
         frame_num = -1
         while (True):
             ret, frame = cap.read()
             frame_num += 1
-            if (frame_num % frame_sampling_rate != 0):
+            frame_mod = frame_num % frame_sampling_rate
+            if (frame_mod != 0):
                 continue
             if (frame is None):
                 break
             
+            frame_index = frame_num * frame_sampling_rate
+            
             resized = cv2.resize(frame, frame_shape)
             gray_frame = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
             normalized_frame = gray_frame / 255.0
-            video_data.append(normalized_frame)
+            video_data[frame_index] = normalized_frame
         cap.release()
 
-        train_data.append(video_data)
-        train_labels.append(label_index)
-
-    train_data = np.array(train_data).reshape((batch_size, num_frames, frame_shape[0], frame_shape[1], 1))
-    train_labels = np.array(train_labels)
-
+        train_data[file_index] = video_data
+        train_labels[file_index] = label_index
+    
     train_dataset = tf.data.Dataset.from_tensor_slices((train_data, train_labels))
     return train_dataset
 
