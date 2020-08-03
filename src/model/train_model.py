@@ -80,24 +80,24 @@ def make_generator_model():
 
     concat = layers.Concatenate()([seed, label])
     
-    dense1 = layers.Dense(32, use_bias=False)(concat)
+    dense1 = layers.Dense(16, use_bias=False)(concat)
     dense1n = layers.BatchNormalization()(dense1)
     dense1a = layers.LeakyReLU()(dense1n)
 
-    dense2 = layers.Dense(num_frames*16, use_bias=False)(dense1a)
-    dense2n = layers.BatchNormalization()(dense2)
-    dense2a = layers.LeakyReLU()(dense2n)
+    # dense2 = layers.Dense(num_frames*16, use_bias=False)(dense1a)
+    # dense2n = layers.BatchNormalization()(dense2)
+    # dense2a = layers.LeakyReLU()(dense2n)
 
-    reshaped1 = layers.Reshape((num_frames, 16))(dense2a)
+    # reshaped1 = layers.Reshape((num_frames, 16))(dense2a)
 
-    lstm = layers.Bidirectional(layers.LSTM(64, use_bias=False))(reshaped1)
-    dense3 = layers.Dense(4*4*16, use_bias=False)(lstm)
+    lstm = layers.Bidirectional(layers.LSTM(32, use_bias=False))(dense1a)
+    dense3 = layers.Dense(2*2*8, use_bias=False)(lstm)
     dense3n = layers.BatchNormalization()(dense3)
     dense3a = layers.LeakyReLU()(dense3n)
 
-    reshaped2 = layers.Reshape((4, 4, 16))(dense3a)
+    reshaped2 = layers.Reshape((2, 2, 8))(dense3a)
 
-    conv1 = layers.Conv2DTranspose(16, (5,5), strides=(2,2), use_bias=False, input_shape=[4, 4, 16])(reshaped2)
+    conv1 = layers.Conv2DTranspose(16, (5,5), strides=(4,4), use_bias=False, input_shape=[2, 2, 8])(reshaped2)
     conv1n = layers.BatchNormalization()(conv1)
     conv1a = layers.LeakyReLU()(conv1n)
 
