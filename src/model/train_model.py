@@ -8,7 +8,7 @@ import os
 
 
 buffer_size = 30000
-batch_size = 64
+batch_size = 32
 dataset_root = Path('dataset')
 dictionary_path = Path('dictionary.txt')
 num_frames = 253
@@ -87,25 +87,25 @@ def make_generator_model():
     reshaped1 = layers.Reshape((num_frames, 256))(dense2a)
 
     lstm = layers.Bidirectional(layers.LSTM(256, use_bias=False))(reshaped1)
-    dense3 = layers.Dense(num_frames*16*16*256, use_bias=False)(lstm)
+    dense3 = layers.Dense(num_frames*4*4*64, use_bias=False)(lstm)
     dense3n = layers.BatchNormalization()(dense3)
     dense3a = layers.LeakyReLU()(dense3n)
 
-    reshaped2 = layers.Reshape((num_frames, 16, 16, 256))(dense3a)
+    reshaped2 = layers.Reshape((num_frames, 4, 4, 64))(dense3a)
 
-    conv1 = layers.Conv2DTranspose(256, (5,5), strides=(2,2), use_bias=False, input_shape=[16, 16, 256])(reshaped2)
+    conv1 = layers.Conv2DTranspose(128, (5,5), strides=(2,2), use_bias=False, input_shape=[4, 4, 64])(reshaped2)
     conv1n = layers.BatchNormalization()(conv1)
     conv1a = layers.LeakyReLU()(conv1n)
 
-    conv2 = layers.Conv2DTranspose(256, (5,5), strides=(2,2), use_bias=False, input_shape=[32, 32, 256])(conv1a)
+    conv2 = layers.Conv2DTranspose(256, (5,5), strides=(2,2), use_bias=False, input_shape=[8, 8, 128])(conv1a)
     conv2n = layers.BatchNormalization()(conv2)
     conv2a = layers.LeakyReLU()(conv2n)
 
-    conv3 = layers.Conv2DTranspose(256, (5,5), strides=(2,2), use_bias=False, input_shape=[64, 64, 256])(conv2a)
+    conv3 = layers.Conv2DTranspose(256, (5,5), strides=(2,2), use_bias=False, input_shape=[16, 16, 256])(conv2a)
     conv3n = layers.BatchNormalization()(conv3)
     conv3a = layers.LeakyReLU()(conv3n)
 
-    conv4 = layers.Conv2DTranspose(128, (5,5), strides=(2,2), use_bias=False, input_shape=[128, 128, 128])(conv3a)
+    conv4 = layers.Conv2DTranspose(128, (5,5), strides=(2,2), use_bias=False, input_shape=[32, 32, 256])(conv3a)
     conv4n = layers.BatchNormalization()(conv4)
     conv4a = layers.LeakyReLU()(conv4n)
 
