@@ -80,7 +80,7 @@ def make_generator_model():
 
     concat = layers.Concatenate()([seed, label])
     
-    dense1 = layers.Dense(16, use_bias=False)(concat)
+    dense1 = layers.Dense(num_frames*8, use_bias=False)(concat)
     dense1n = layers.BatchNormalization()(dense1)
     dense1a = layers.LeakyReLU()(dense1n)
 
@@ -88,9 +88,9 @@ def make_generator_model():
     # dense2n = layers.BatchNormalization()(dense2)
     # dense2a = layers.LeakyReLU()(dense2n)
 
-    # reshaped1 = layers.Reshape((num_frames, 16))(dense2a)
+    reshaped1 = layers.Reshape((num_frames, 8))(dense2a)
 
-    lstm = layers.Bidirectional(layers.LSTM(32, use_bias=False))(dense1a)
+    lstm = layers.Bidirectional(layers.LSTM(32, use_bias=False))(reshaped1)
     dense3 = layers.Dense(2*2*8, use_bias=False)(lstm)
     dense3n = layers.BatchNormalization()(dense3)
     dense3a = layers.LeakyReLU()(dense3n)
