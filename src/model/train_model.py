@@ -41,19 +41,19 @@ def make_discriminator_model():
     conv1a = layers.LeakyReLU()(conv1)
     conv1d = layers.Dropout(0.1)(conv1a)
 
-    conv2 = layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same')(conv1d)
+    conv2 = layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same', input_shape=[250, 250, 64])(conv1d)
     conv2a = layers.LeakyReLU()(conv2)
     conv2d = layers.Dropout(0.1)(conv2a)
 
-    conv3 = layers.Conv2D(256, (5, 5), strides=(2, 2), padding='same')(conv2d)
+    conv3 = layers.Conv2D(256, (5, 5), strides=(2, 2), padding='same', input_shape=[125, 125, 128])(conv2d)
     conv3a = layers.LeakyReLU()(conv3)
     conv3d = layers.Dropout(0.1)(conv3a)
 
-    conv4 = layers.Conv2D(256, (5, 5), strides=(2, 2), padding='same')(conv3d)
+    conv4 = layers.Conv2D(256, (5, 5), strides=(2, 2), padding='same', input_shape=[63, 63, 256])(conv3d)
     conv4a = layers.LeakyReLU()(conv4)
     conv4d = layers.Dropout(0.1)(conv4a)
 
-    conv5 = layers.Conv2D(256, (5, 5), strides=(2, 2), padding='same')(conv4d)
+    conv5 = layers.Conv2D(256, (5, 5), strides=(2, 2), padding='same', input_shape=[32, 32, 256])(conv4d)
     conv5a = layers.LeakyReLU()(conv5)
     conv5d = layers.Dropout(0.1)(conv5a)
 
@@ -93,19 +93,19 @@ def make_generator_model():
 
     reshaped2 = layers.Reshape((num_frames, 16, 16, 256))(dense3a)
 
-    conv1 = layers.Conv2DTranspose(256, (5,5), strides=(2,2), use_bias=False)(reshaped2)
+    conv1 = layers.Conv2DTranspose(256, (5,5), strides=(2,2), use_bias=False, input_shape=[16, 16, 256])(reshaped2)
     conv1n = layers.BatchNormalization()(conv1)
     conv1a = layers.LeakyReLU()(conv1n)
 
-    conv2 = layers.Conv2DTranspose(256, (5,5), strides=(2,2), use_bias=False)(conv1a)
+    conv2 = layers.Conv2DTranspose(256, (5,5), strides=(2,2), use_bias=False, input_shape=[32, 32, 256])(conv1a)
     conv2n = layers.BatchNormalization()(conv2)
     conv2a = layers.LeakyReLU()(conv2n)
 
-    conv3 = layers.Conv2DTranspose(256, (5,5), strides=(2,2), use_bias=False)(conv2a)
+    conv3 = layers.Conv2DTranspose(256, (5,5), strides=(2,2), use_bias=False, input_shape=[64, 64, 256])(conv2a)
     conv3n = layers.BatchNormalization()(conv3)
     conv3a = layers.LeakyReLU()(conv3n)
 
-    conv4 = layers.Conv2DTranspose(128, (5,5), strides=(2,2), use_bias=False)(conv3a)
+    conv4 = layers.Conv2DTranspose(128, (5,5), strides=(2,2), use_bias=False, input_shape=[128, 128, 128])(conv3a)
     conv4n = layers.BatchNormalization()(conv4)
     conv4a = layers.LeakyReLU()(conv4n)
 
