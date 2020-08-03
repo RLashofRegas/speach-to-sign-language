@@ -114,6 +114,8 @@ def make_generator_model():
     model = tf.keras.Model(inputs=[seed, label], outputs=output)
     return model
 
+generator = make_generator_model()
+discriminator = make_discriminator_model()
 
 cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
