@@ -32,7 +32,7 @@ index_by_word = {}
 with open(str(dictionary_path)) as f:
     for i, word in enumerate(f.readlines()):
         stripped = word.strip()
-        if (stripped in index_by_word):
+        if (stripped in words_in_dir):
             index_by_word[stripped] = i
 
 num_words = len(index_by_word)
