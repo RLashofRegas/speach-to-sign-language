@@ -134,6 +134,8 @@ def train_step(images, labels):
     discriminator_optimizer.apply_gradients(
         zip(gradients_of_discriminator, discriminator.trainable_variables))
 
+    return gen_loss, disc_loss
+
 
 def get_video_data(file_batch):
     train_data = np.empty(
@@ -184,16 +186,20 @@ def train(dataset, epochs):
     for epoch in range(epochs):
         start = time.time()
 
+        gen_losses = []
+        disc_losses = []
         for file_batch in file_batches:
             train_data, train_labels = get_video_data(file_batch)
-            train_step(train_data, train_labels)
+            gen_loss, disc_loss = train_step(train_data, train_labels)
+            gen_losses.append(gen_loss)
+            disc_losses.append(disc_loss)
 
         # Save the model every 10 epochs
         if (epoch + 1) % 10 == 0:
             checkpoint_manager.save()
 
-        print('Time for epoch {} is {} sec'.format(
-            epoch + 1, time.time() - start))
+        print('Time for epoch {} is {} sec. min gen loss: {}, min disc loss: {}.'.format(
+            epoch + 1, time.time() - start, min(gen_losses), min(disc_losses)))
 
 
 train(file_batches, num_epochs)
