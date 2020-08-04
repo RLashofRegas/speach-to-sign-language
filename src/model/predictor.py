@@ -3,6 +3,7 @@ from model_builder import ModelBuilder
 import os
 import cv2
 import numpy as np
+from typing import Callable, Any
 
 
 class Predictor:
@@ -57,8 +58,19 @@ class Predictor:
 
         return np.array(pred_sentence)
 
+    def _transform(self, x: float) -> float:
+        if x < 0:
+            return 0.0
+        else:
+            return x * 255.0
+
+    def _get_element_transform(self) -> Any:
+        return np.vectorize(self._transform)
+
     def video_for_sentence(self, sentence: str, video_path: str) -> None:
         pred_sentence = self.prediction_for_sentence(sentence)
+        transformation = self._get_element_transform()
+        pred_sentence = np.array(transformation(pred_sentence), dtype='uint8')
         avi_fourcc = cv2.VideoWriter_fourcc(*'XVID')
         fps = 2
         size = (pred_sentence.shape[2], pred_sentence.shape[3])

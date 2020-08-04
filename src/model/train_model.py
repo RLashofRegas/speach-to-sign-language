@@ -18,6 +18,10 @@ arg_parser.add_argument(
 arg_parser.add_argument(
     '-s', '--dataset_path', type=str, default='dataset',
     help='Path of where to look for the dataset.')
+arg_parser.add_argument(
+    '-c', '--checkpoint', type=str, default=None,
+    help='Checkpoint to start from.'
+)
 args = arg_parser.parse_args()
 
 buffer_size = 30000
@@ -82,6 +86,9 @@ checkpoint_prefix = 'ckpt'
 checkpoint = model_builder.get_checkpoint(
     checkpoint_dir, checkpoint_prefix, generator_optimizer,
     discriminator_optimizer, generator, discriminator)
+
+if (args.checkpoint is not None):
+    checkpoint.restore(args.checkpoint)
 
 
 seed = tf.random.normal([num_examples_to_generate, noise_dim])
