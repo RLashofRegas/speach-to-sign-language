@@ -86,6 +86,8 @@ checkpoint_prefix = 'ckpt'
 checkpoint = model_builder.get_checkpoint(
     checkpoint_dir, checkpoint_prefix, generator_optimizer,
     discriminator_optimizer, generator, discriminator)
+checkpoint_manager = tf.train.CheckpointManager(
+    checkpoint, checkpoint_dir, max_to_keep=3)
 
 if (args.checkpoint is not None):
     checkpoint.restore(args.checkpoint)
@@ -186,9 +188,9 @@ def train(dataset, epochs):
             train_data, train_labels = get_video_data(file_batch)
             train_step(train_data, train_labels)
 
-        # Save the model every 15 epochs
+        # Save the model every 10 epochs
         if (epoch + 1) % 10 == 0:
-            checkpoint.save(file_prefix=checkpoint_prefix)
+            checkpoint_manager.save()
 
         print('Time for epoch {} is {} sec'.format(
             epoch + 1, time.time() - start))
