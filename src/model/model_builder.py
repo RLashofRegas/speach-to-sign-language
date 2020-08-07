@@ -53,8 +53,8 @@ class ModelBuilder:
         lstm = layers.Bidirectional(layers.LSTM(128))(reshaped)
         concat = layers.Concatenate()([lstm, label])
 
-        dense1 = layers.Dense(256)(concat)
-        dense2 = layers.Dense(128)(dense1)
+        dense1 = layers.Dense(256, activation='relu')(concat)
+        dense2 = layers.Dense(128, activation='relu')(dense1)
 
         output = layers.Dense(1)(dense2)
 
@@ -67,14 +67,20 @@ class ModelBuilder:
 
         concat = layers.Concatenate()([seed, label])
 
-        dense1 = layers.Dense(self.num_frames * 8, use_bias=False)(concat)
+        dense1 = layers.Dense(
+            self.num_frames * 8,
+            use_bias=False,
+            activation='relu')(concat)
         dense1n = layers.BatchNormalization()(dense1)
         dense1a = layers.LeakyReLU()(dense1n)
 
         reshaped1 = layers.Reshape((self.num_frames, 8))(dense1a)
 
         lstm = layers.Bidirectional(layers.LSTM(32, use_bias=False))(reshaped1)
-        dense3 = layers.Dense(2 * 2 * 8, use_bias=False)(lstm)
+        dense3 = layers.Dense(
+            2 * 2 * 8,
+            use_bias=False,
+            activation='relu')(lstm)
         dense3n = layers.BatchNormalization()(dense3)
         dense3a = layers.LeakyReLU()(dense3n)
 
