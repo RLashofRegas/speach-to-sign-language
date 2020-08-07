@@ -1,0 +1,26 @@
+version: "2"
+
+services:
+    message_broker:
+        image: cloud_message_broker
+        build:
+            context: ./message_broker
+            dockerfile: Dockerfile
+        ports:
+            - 1883:1883
+        networks:
+            - cloud.message_processing.network
+        
+    message_processor:
+        image: cloud_message_processor
+        build:
+            context: ./message_processor
+            dockerfile: Dockerfile
+        depends_on:
+            - message_broker
+        networks:
+            - cloud.message_processing.network
+
+networks:
+    cloud.message_processing.network:
+        driver: bridge

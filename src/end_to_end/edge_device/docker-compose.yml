@@ -1,0 +1,50 @@
+version: '2.4'
+
+services:
+  message_broker:
+    image: edge_message_broker
+    build:
+      context: ./message_broker
+      dockerfile: Dockerfile
+    networks:
+      - edge_device.network
+  
+  message_forwarder:
+    image: edge_message_forwarder
+    build:
+      context: ./message_forwarder
+      dockerfile: Dockerfile
+    ports:
+      - 1883:1883
+    networks:
+      - edge_device.network
+
+  messenger:
+    image: edge_messenger
+    build:
+      context: ./messenger
+      dockerfile: Dockerfile
+    depends_on:
+      - message_broker
+    networks:
+      - edge_device.network
+    runtime: nvidia
+    privileged: true
+    stdin_open: true
+    tty: true
+    devices:
+      - /dev/video0:/dev/video0
+      - /dev/video1:/dev/video1
+
+    video_player:
+      image: video_player
+      build:
+        context: ./video_player
+        dockerfile: Dockerfile
+      depends_on: message_broker
+      networks:
+        - edge_device.network
+
+networks:
+  edge_device.network:
+    driver: bridge

@@ -1,0 +1,4 @@
+paho_mqtt
+tensorflow
+opencv-python
+numpy
